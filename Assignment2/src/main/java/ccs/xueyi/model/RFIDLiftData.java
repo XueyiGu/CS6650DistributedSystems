@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ccs.xueyi.server.model;
+package ccs.xueyi.model;
 
 import java.io.Serializable;
 
@@ -13,12 +13,12 @@ import java.io.Serializable;
  */
 public class RFIDLiftData implements Serializable{
     private String resortID;
-    private int dayNum;
+    private String dayNum;
     private String timestamp;
     private String skierID;
     private String liftID;
 
-    public RFIDLiftData(String resortID, int dayNum, String timestamp, String skierID, String liftID) {
+    public RFIDLiftData(String resortID, String dayNum, String timestamp, String skierID, String liftID) {
         this.resortID = resortID;
         this.dayNum = dayNum;
         this.timestamp = timestamp;
@@ -34,11 +34,11 @@ public class RFIDLiftData implements Serializable{
         this.resortID = resortID;
     }
 
-    public int getDayNum() {
+    public String getDayNum() {
         return dayNum;
     }
 
-    public void setDayNum(int dayNum) {
+    public void setDayNum(String dayNum) {
         this.dayNum = dayNum;
     }
 

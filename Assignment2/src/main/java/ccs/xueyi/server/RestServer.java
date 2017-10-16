@@ -1,5 +1,8 @@
 package ccs.xueyi.server;
 
+import ccs.xueyi.model.RFIDLiftData;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -15,6 +18,7 @@ import javax.ws.rs.core.Response;
 @Path("myresource")
 public class RestServer {
 
+    private static Map<String, RFIDLiftData> map = new HashMap<>();
     /**
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "text/plain" media type.
@@ -30,7 +34,15 @@ public class RestServer {
             @PathParam("skierID") String skierID,
             @PathParam("dayNum") int dayNum
             ) {
-        return Response.status(200).entity("").build();
+        System.out.println("map size: " + map.size());
+        String liftID = "0";
+        if(map.containsKey(skierID)){
+            liftID = map.get(skierID).getLiftID();
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(skierID);
+        sb.append(liftID);
+        return Response.status(200).entity(sb.toString()).build();
     }
     
      /**
@@ -39,7 +51,7 @@ public class RestServer {
      * @param dayNum
      * @param timestamp
      * @param skierID
-     * @param liftOD
+     * @param liftID
      * @return 
      */
     @POST
@@ -50,7 +62,17 @@ public class RestServer {
                 @PathParam("dayNum") String dayNum,
                 @PathParam("timestamp") String timestamp,
                 @PathParam("skierID") String skierID,
-                @PathParam("liftID") String liftOD) {
-        return Response.status(200).entity("").build(); 
+                @PathParam("liftID") String liftID) {
+        RFIDLiftData data = new RFIDLiftData(resortID, dayNum, timestamp, skierID, liftID);
+        if(!map.containsKey(skierID)){
+            map.put(skierID, data);
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(resortID);
+        sb.append(dayNum);
+        sb.append(timestamp);
+        sb.append(skierID);
+        sb.append(liftID);
+        return Response.status(200).entity(sb.toString()).build(); 
     }   
 }

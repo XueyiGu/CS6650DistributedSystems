@@ -3,13 +3,17 @@ package ccs.xueyi.restfulservice;
 import ccs.xueyi.restfulservice.beans.RFIDLiftData;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+
 
 /**
  * Root resource (exposed at "rest" path)
@@ -25,36 +29,39 @@ public class RestServer {
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "text/plain" media type.
      *
+     * @param skierID
+     * @param dayNum
      * @return String that will be returned as a text/plain response.
      */
     
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
-        return "Got it!";
+    @Path("/myvert/{skierID}&{dayNum}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RFIDLiftData getData(
+                        @PathParam("skierID") String skierID,
+                        @PathParam("dayNum") String dayNum) {
+        RFIDLiftData data = new RFIDLiftData();
+        if(map.containsKey(skierID)){
+            data = map.get(skierID);
+        }
+        return data;
     }
     
     
     @POST
     @Path("/load")
-    @Produces(MediaType.APPLICATION_XML)
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public String postData(
-                @PathParam("resortID") String resortID,
-                @PathParam("dayNum") String dayNum,
-                @PathParam("timestamp") String timestamp,
-                @PathParam("skierID") String skierID,
-                @PathParam("liftID") String liftID) {
-        RFIDLiftData data = new RFIDLiftData(resortID, dayNum, timestamp, skierID, liftID);
-        if(!map.containsKey(skierID)){
-            map.put(skierID, data);
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String postData(RFIDLiftData data) {
+        if(data == null){
+            return FAILURE_RESULT;
+        }
+        //RFIDLiftData data = new RFIDLiftData(resortID, dayNum, timestamp, skierID, liftID);
+        if(!map.containsKey(data.getSkierID())){
+            map.put(data.getSkierID(), data);
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(resortID);
-        sb.append(dayNum);
-        sb.append(timestamp);
-        sb.append(skierID);
-        sb.append(liftID);
+        
         return SUCCESS_RESULT; 
     } 
 }

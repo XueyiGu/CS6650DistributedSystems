@@ -30,28 +30,26 @@ public class RestClient {
         client = ClientBuilder.newClient();
         webTarget = 
 //            client.target("http://34.214.49.130:8080/MavenServer/").path("webapi/myresource");
-            client.target("http://" + url + "/").path("webapi/rest/load");
+            client.target("http://" + url + "/").path("webapi/rest");
 //        client.target("http://localhost:9090/").path("webapi/");
     }
   
-    public String postData(Form form) throws
-            ClientErrorException{
-//         webTarget.request(MediaType.TEXT_PLAIN)
-//                        .post(Entity.entity(requestEntity,
-//                                javax.ws.rs.core.MediaType.TEXT_PLAIN),
-//                                responseType);
-        String result = webTarget.request(MediaType.APPLICATION_XML)
-         .post(Entity.entity(form,
-            MediaType.APPLICATION_FORM_URLENCODED_TYPE),
-            String.class);
-        return result;
+    public int postData(RFIDLiftData form) throws ClientErrorException{
+//        String result = webTarget.path("/load")
+//                .request(MediaType.APPLICATION_XML)
+//                .post(Entity.entity(form,
+//                    MediaType.APPLICATION_FORM_URLENCODED_TYPE),
+//                    String.class);
+        Response response = webTarget.path("/load").request()
+                .post(Entity.json(form));
+        return response.getStatus();
     }
     
     public String getData(String skierID, String dayNum) throws ClientErrorException{
-        RFIDLiftData data = webTarget.path("/{skierID}&{dayNum}")
+        RFIDLiftData data = webTarget.path("/myvert/{skierID}&{dayNum}")
                 .resolveTemplate("skierID", skierID)
                 .resolveTemplate("dayNum", dayNum)
-                .request(MediaType.APPLICATION_XML)
+                .request(MediaType.APPLICATION_JSON)
                 .get(RFIDLiftData.class);
         return data.getTimestamp();
     } 
@@ -64,7 +62,11 @@ public class RestClient {
         form.param("timestamp", "1");
         form.param("skierID", "001");
         form.param("liftID", "99");
-        String result = client.postData(form);
-        System.out.println(result);      
+        RFIDLiftData data = new RFIDLiftData("1", "1", "1", "001", "99");
+        int result = client.postData(data);
+        System.out.println(result);    
+        
+        String get = client.getData("001", "1");
+        System.out.println("get result : " + get);  
     } 
 }

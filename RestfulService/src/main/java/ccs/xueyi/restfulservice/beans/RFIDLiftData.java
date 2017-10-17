@@ -6,13 +6,14 @@
 package ccs.xueyi.restfulservice.beans;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author ceres
  */
-@XmlRootElement
+//@XmlRootElement(name = "rfid")
 public class RFIDLiftData implements Serializable{
     private String resortID;
     private String dayNum;
@@ -32,7 +33,8 @@ public class RFIDLiftData implements Serializable{
     public String getResortID() {
         return resortID;
     }
-
+    
+   //@XmlElement
     public void setResortID(String resortID) {
         this.resortID = resortID;
     }
@@ -41,6 +43,7 @@ public class RFIDLiftData implements Serializable{
         return dayNum;
     }
 
+    //@XmlElement
     public void setDayNum(String dayNum) {
         this.dayNum = dayNum;
     }
@@ -49,6 +52,7 @@ public class RFIDLiftData implements Serializable{
         return timestamp;
     }
 
+    //@XmlElement
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
@@ -57,6 +61,7 @@ public class RFIDLiftData implements Serializable{
         return skierID;
     }
 
+    //@XmlElement
     public void setSkierID(String skierID) {
         this.skierID = skierID;
     }
@@ -65,6 +70,7 @@ public class RFIDLiftData implements Serializable{
         return liftID;
     }
 
+    //@XmlElement
     public void setLiftID(String liftID) {
         this.liftID = liftID;
     }

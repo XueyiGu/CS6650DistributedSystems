@@ -15,12 +15,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 //@XmlRootElement(name = "rfid")
 public class RFIDLiftData implements Serializable{
+    private String id;
     private String resortID;
     private String dayNum;
     private String timestamp;
     private String skierID;
     private String liftID;
 
+    public RFIDLiftData(String id, String resortID, String dayNum, String timestamp, String skierID, String liftID) {
+        this.id = id;
+        this.resortID = resortID;
+        this.dayNum = dayNum;
+        this.timestamp = timestamp;
+        this.skierID = skierID;
+        this.liftID = liftID;
+    }
+
+    
     public RFIDLiftData(String resortID, String dayNum, String timestamp, String skierID, String liftID) {
         this.resortID = resortID;
         this.dayNum = dayNum;
@@ -30,6 +41,15 @@ public class RFIDLiftData implements Serializable{
     }
     public RFIDLiftData(){}
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    
     public String getResortID() {
         return resortID;
     }

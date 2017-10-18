@@ -95,5 +95,13 @@ public class RFIDLiftData implements Serializable{
         this.liftID = liftID;
     }
     
-    
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("resortID: ").append(getResortID()).append(", ");
+        sb.append("dayNum: ").append(getDayNum()).append(", ");
+        sb.append("timestamp: ").append(getTimestamp()).append(", ");
+        sb.append("skierID: ").append(getSkierID()).append(", ");
+        sb.append("liftID: ").append(getLiftID());
+        return sb.toString();
+    }
 }

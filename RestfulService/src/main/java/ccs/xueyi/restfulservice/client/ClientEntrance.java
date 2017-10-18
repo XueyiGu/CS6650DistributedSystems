@@ -6,9 +6,6 @@
 package ccs.xueyi.restfulservice.client;
 
 import java.util.Scanner;
-import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -17,7 +14,6 @@ import java.util.logging.Logger;
 public class ClientEntrance {
     public static void main(String[] args){
         int threadNum = 10;
-        int iterationNum = 100;
         String ip = null;
         String port = null;
         
@@ -27,11 +23,10 @@ public class ClientEntrance {
                     + "Parameters are separeted by space.");
         while (scanner.hasNext()) {
             String[] strs = scanner.nextLine().split("\\s");
-            if (strs != null && strs.length == 4) {
+            if (strs != null && strs.length == 3) {
                 threadNum = Integer.parseInt(strs[0]);
-                iterationNum = Integer.parseInt(strs[1]);
-                ip = strs[2];
-                port = strs[3];
+                ip = strs[1];
+                port = strs[2];
                 break;
             }else{
                 System.out.println("Please enter the parameters in correct format");
@@ -39,7 +34,7 @@ public class ClientEntrance {
             }
         }
         String url = ip + ":" + port;
-        ClientTools processor = new ClientTools(url, threadNum, iterationNum);
+        ClientTools processor = new ClientTools(url, threadNum);
         
         
         

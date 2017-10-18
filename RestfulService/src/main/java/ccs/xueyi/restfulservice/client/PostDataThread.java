@@ -51,6 +51,7 @@ public class PostDataThread extends Thread{
     
     private void doPost(RestClient client){
         int length = 11;
+        
         requestCount++;
         
         if(length == 11){

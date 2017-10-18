@@ -28,11 +28,10 @@ import java.util.logging.Logger;
  * @author ceres
  */
 public class ClientTools {
-    private String FILE_NAME;
+    private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day1.csv";
     
     private String url;
     private int threadNum = 10;
-    private int iterationNum = 100;
     private int requestCount = 0;
     private int successCount = 0;
     private List<GetDataThread> threads = new ArrayList<>();
@@ -69,10 +68,9 @@ public class ClientTools {
         
     }
 
-    public ClientTools(String url, int threadNum, int iterationNum) {
+    public ClientTools(String url, int threadNum) {
         this.url = url;
         this.threadNum = threadNum;
-        this.iterationNum = iterationNum;
     }
     
     public void startThread() throws TimeoutException{
@@ -87,14 +85,17 @@ public class ClientTools {
             t.start();
         }
     }
-    public void fileReader(ConcurrentLinkedQueue queue) throws IOException{
+    public void fileReader() throws IOException{
         if(FILE_NAME == null){
             return;
         }
         try {
             BufferedReader bReader = new BufferedReader(new FileReader(FILE_NAME));
+            //ignore the header line
+            bReader.readLine();
             String nextLine = bReader.readLine();
-            while(nextLine != null){
+            int i = 0;
+            while(nextLine != null && i < 20){
                 String[] items = nextLine.split(",");
                 String resortID = items[0];
                 String dayNum = items[1];
@@ -104,6 +105,9 @@ public class ClientTools {
                 RFIDLiftData data = new RFIDLiftData(resortID, dayNum, timestamp,
                                                     skierID, liftID);
                 queue.offer(data);
+                System.out.println(data.toString());
+                nextLine = bReader.readLine();
+                i++;
             }
             bReader.close();
         } catch (FileNotFoundException ex) {
@@ -112,6 +116,14 @@ public class ClientTools {
     }
 
 
+    public static void main(String[] args){
+        ClientTools ct = new ClientTools("", 5432);
+        try {
+            ct.fileReader();
+        } catch (IOException ex) {
+            Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     public void setFILE_NAME(String FILE_NAME) {
         this.FILE_NAME = FILE_NAME;
     }

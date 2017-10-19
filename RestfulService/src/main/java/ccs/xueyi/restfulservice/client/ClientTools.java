@@ -34,7 +34,7 @@ public class ClientTools {
     private int threadNum = 10;
     private int requestCount = 0;
     private int successCount = 0;
-    private List<GetDataThread> threads = new ArrayList<>();
+    private List<PostDataThread> threads = new ArrayList<>();
     
     private long startTime = 0;
     private long finishTime = 0;
@@ -80,7 +80,7 @@ public class ClientTools {
         System.out.println("All threads running...");
         
         for(int i = 0; i < threadNum; i++){
-            GetDataThread t = new GetDataThread(url, barrier, queue);
+            PostDataThread t = new PostDataThread(url, barrier, queue);
             threads.add(t);
             t.start();
         }
@@ -105,7 +105,7 @@ public class ClientTools {
                 RFIDLiftData data = new RFIDLiftData(resortID, dayNum, timestamp,
                                                     skierID, liftID);
                 queue.offer(data);
-                System.out.println(data.toString());
+                //System.out.println(queue.size());
                 nextLine = bReader.readLine();
                 i++;
             }
@@ -140,7 +140,7 @@ public class ClientTools {
     }
     
     private void getCounts(){
-        for(GetDataThread t : threads){
+        for(PostDataThread t : threads){
             successCount += t.getSuccessCount();
             requestCount += t.getRequestCount();
         }
@@ -151,7 +151,7 @@ public class ClientTools {
         long latencySum = 0;
         long[] latencyArray = new long[requestCount];
         int count = 0;
-        for(GetDataThread t : threads){
+        for(PostDataThread t : threads){
             for(long l : t.getLatency()){
                 latencyArray[count++] = l;
                 latencySum += l;

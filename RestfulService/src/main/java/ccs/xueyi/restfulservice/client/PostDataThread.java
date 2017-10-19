@@ -50,11 +50,10 @@ public class PostDataThread extends Thread{
     }
     
     private void doPost(RestClient client){
-        int length = 11;
-        
+        int status = client.postData(queue.poll());
         requestCount++;
         
-        if(length == 11){
+        if(status == 200){
             successCount++;
         }
     }

@@ -8,6 +8,8 @@ package ccs.xueyi.restfulservice;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,11 +17,16 @@ import java.sql.SQLException;
  */
 public class ConnectionManager {
     private static final String url = "jdbc:postgresql://"
-            + "restinstance.cxq5ozjlz4tr.us-west-2.rds.amazonaws.com:5432/postgresql";
+            + "restinstance.cxq5ozjlz4tr.us-west-2.rds.amazonaws.com:5432/restdb";
     private static final String user = "xueyigu";
     private static final String password = "adminadmin";
     
     public static Connection connect() throws SQLException{
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return DriverManager.getConnection(url, user, password);
     }
     

@@ -70,7 +70,7 @@ public class RFIDLiftDAO {
             insertStatement.setString(1, data.getResortID());
             insertStatement.setString(2, data.getDayNum());
             insertStatement.setString(3, data.getSkierID());
-            insertStatement.setString(4, data.getLiftID());
+            insertStatement.setInt(4, Integer.parseInt(data.getLiftID()));
             insertStatement.setString(5, data.getTimestamp());
             int affectedRows = insertStatement.executeUpdate();
             if (affectedRows > 0) {

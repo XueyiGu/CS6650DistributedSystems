@@ -6,7 +6,7 @@
 package ccs.xueyi.restfulservice.client;
 
 
-import ccs.xueyi.restfulservice.beans.RFIDLiftData;
+import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

@@ -6,7 +6,7 @@
 package ccs.xueyi.restfulservice.DAO;
 
 import ccs.xueyi.restfulservice.ConnectionManager;
-import ccs.xueyi.restfulservice.beans.RFIDLiftData;
+import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,7 +34,7 @@ public class RFIDLiftDAO {
         return instance;
     }
     public void getAllData() {
-        String statement = "SELECT * FROM skidata" ;
+        String statement = "SELECT * FROM skidata " ;
         Connection connection = null;
         PreparedStatement selectStatement = null;
         ResultSet results = null;
@@ -90,7 +90,7 @@ public class RFIDLiftDAO {
     }
     
     public RFIDLiftData findData(String skierID, String dayNum){
-        String statement = "SELECT * FROM skidata " + " WHERE skier_id = ? and day_num = ?";
+        String statement = "SELECT * FROM skidata " + " WHERE skier_id = ? and day_num = ? ";
         Connection connection = null;
         PreparedStatement selectStatement = null;
         ResultSet results = null;
@@ -116,5 +116,20 @@ public class RFIDLiftDAO {
             Logger.getLogger(RFIDLiftDAO_NAME).log(Level.SEVERE, null, ex);
         }
         return data;
+    }
+    
+    public void cleanUp() {
+        String deleteStmt = "DELETE FROM skidata ";
+        Connection connection = null;
+        PreparedStatement prepareStmt = null;
+        
+        try {
+            connection = ConnectionManager.connect();
+            prepareStmt = connection.prepareStatement(deleteStmt);
+            prepareStmt.executeUpdate();
+            prepareStmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(RFIDLiftDAO_NAME).log(Level.SEVERE, null, ex);
+        }
     }
 }

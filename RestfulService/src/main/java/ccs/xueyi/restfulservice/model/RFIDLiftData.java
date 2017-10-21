@@ -3,11 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ccs.xueyi.restfulservice.beans;
+package ccs.xueyi.restfulservice.model;
 
 import java.io.Serializable;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -30,8 +28,7 @@ public class RFIDLiftData implements Serializable{
         this.skierID = skierID;
         this.liftID = liftID;
     }
-
-    
+  
     public RFIDLiftData(String resortID, String dayNum, String timestamp, String skierID, String liftID) {
         this.resortID = resortID;
         this.dayNum = dayNum;
@@ -49,12 +46,10 @@ public class RFIDLiftData implements Serializable{
         this.id = id;
     }
 
-    
     public String getResortID() {
         return resortID;
     }
-    
-   //@XmlElement
+   
     public void setResortID(String resortID) {
         this.resortID = resortID;
     }
@@ -63,7 +58,6 @@ public class RFIDLiftData implements Serializable{
         return dayNum;
     }
 
-    //@XmlElement
     public void setDayNum(String dayNum) {
         this.dayNum = dayNum;
     }
@@ -72,7 +66,6 @@ public class RFIDLiftData implements Serializable{
         return timestamp;
     }
 
-    //@XmlElement
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
@@ -81,7 +74,6 @@ public class RFIDLiftData implements Serializable{
         return skierID;
     }
 
-    //@XmlElement
     public void setSkierID(String skierID) {
         this.skierID = skierID;
     }
@@ -94,14 +86,13 @@ public class RFIDLiftData implements Serializable{
     public void setLiftID(String liftID) {
         this.liftID = liftID;
     }
-    
-    public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("resortID: ").append(getResortID()).append(", ");
-        sb.append("dayNum: ").append(getDayNum()).append(", ");
-        sb.append("timestamp: ").append(getTimestamp()).append(", ");
-        sb.append("skierID: ").append(getSkierID()).append(", ");
-        sb.append("liftID: ").append(getLiftID());
-        return sb.toString();
+
+    @Override
+    public String toString() {
+        return "RFIDLiftData{" + "id=" + id + ", resortID=" + resortID + ", "
+                + "dayNum=" + dayNum + ", timestamp=" + timestamp + 
+                ", skierID=" + skierID + ", liftID=" + liftID + '}';
     }
+    
+    
 }

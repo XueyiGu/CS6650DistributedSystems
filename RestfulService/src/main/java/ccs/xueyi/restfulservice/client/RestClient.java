@@ -6,7 +6,7 @@
 package ccs.xueyi.restfulservice.client;
 
 
-import ccs.xueyi.restfulservice.beans.RFIDLiftData;
+import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

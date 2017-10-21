@@ -1,7 +1,7 @@
 package ccs.xueyi.restfulservice;
 
 import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
-import ccs.xueyi.restfulservice.beans.RFIDLiftData;
+import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.Consumes;

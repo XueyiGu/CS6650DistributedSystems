@@ -2,8 +2,11 @@ package ccs.xueyi.restfulservice;
 
 import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -11,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 
 /**
@@ -46,11 +50,15 @@ public class RestServer {
     @Path("/load")
     @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String postData(RFIDLiftData data) {
+    public long postData(RFIDLiftData data) {
+        long recordID = 0;
         if(data != null){
-            rfidLifDAO.insertData(data);
-            return SUCCESS_RESULT;
+            try {
+                recordID = rfidLifDAO.insertData(data);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
-        return FAILURE_RESULT; 
+        return recordID; 
     } 
 }

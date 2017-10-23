@@ -51,10 +51,15 @@ public class ClientEntrance {
                 } catch (IOException ex) {
                     Logger.getLogger(ClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
                 }
-;
             }
         });
         readFile.start();
+        try {
+            readFile.join();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Finished reading file");
         
         try {
             processor.startThread();

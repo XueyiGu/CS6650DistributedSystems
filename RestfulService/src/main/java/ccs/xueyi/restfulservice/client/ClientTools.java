@@ -45,7 +45,7 @@ public class ClientTools {
     private long percentile99th = 0;
     
     static CyclicBarrier barrier; 
-    private ConcurrentLinkedQueue<RFIDLiftData> queue = new ConcurrentLinkedQueue<>();
+    private List<RFIDLiftData> dataList = new ArrayList<>();
     
     class BarrierRunnable implements Runnable{
 
@@ -75,12 +75,16 @@ public class ClientTools {
     
     public void startThread() throws TimeoutException{
         barrier = new CyclicBarrier(threadNum, new BarrierRunnable());
+        int partitionSize = dataList.size() / threadNum;
         startTime = System.currentTimeMillis();
         System.out.println("Client starting, Started time:" + convertTime(startTime));
         System.out.println("All threads running...");
         
         for(int i = 0; i < threadNum; i++){
-            PostDataThread t = new PostDataThread(url, barrier, queue);
+            int start = partitionSize * i;
+            int end = Math.min(partitionSize * (i + 1), dataList.size()) - 1;
+            System.out.println("Start is "+ start + " and end is " + end);
+            PostDataThread t = new PostDataThread(url, barrier, dataList, start, end);
             threads.add(t);
             t.start();
         }
@@ -95,20 +99,23 @@ public class ClientTools {
             bReader.readLine();
             String nextLine = bReader.readLine();
             int i = 0;
-            while(nextLine != null && i < 20){
+            while(nextLine != null && i < 200000){
                 String[] items = nextLine.split(",");
                 String resortID = items[0];
                 String dayNum = items[1];
-                String timestamp = items[2];
-                String skierID = items[3];
-                String liftID = items[4];
+                String skierID = items[2];
+                String liftID = items[3];
+                String timestamp = items[4];
+
                 RFIDLiftData data = new RFIDLiftData(resortID, dayNum, timestamp,
                                                     skierID, liftID);
-                queue.offer(data);
+                dataList.add(data);
+                
                 //System.out.println(queue.size());
                 nextLine = bReader.readLine();
                 i++;
             }
+            System.out.println("Number of rows " + dataList.size());
             bReader.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);

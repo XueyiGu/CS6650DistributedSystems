@@ -5,14 +5,12 @@
  */
 package ccs.xueyi.restfulservice.model;
 
-import java.io.Serializable;
-
 /**
  *
  * @author ceres
  */
 //@XmlRootElement(name = "rfid")
-public class RFIDLiftData implements Serializable{
+public class RFIDLiftData{
     private String id;
     private String resortID;
     private String dayNum;

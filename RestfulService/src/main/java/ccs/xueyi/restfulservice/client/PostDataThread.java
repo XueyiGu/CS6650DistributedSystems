@@ -10,7 +10,6 @@ import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,12 +25,17 @@ public class PostDataThread extends Thread{
     private String url;
     private List<Long> latencies = new ArrayList<>();
     private CyclicBarrier barrier;
-    private ConcurrentLinkedQueue<RFIDLiftData> queue;
+    private List<RFIDLiftData> dataList;
+    private int start;
+    private int end;
     
-    public PostDataThread(String url, CyclicBarrier barrier, ConcurrentLinkedQueue<RFIDLiftData> queue){
+    public PostDataThread(String url, CyclicBarrier barrier, 
+            List<RFIDLiftData> dataList, int start, int end){
         this.url = url;
         this.barrier = barrier;
-        this.queue = queue;
+        this.dataList = dataList;
+        this.start = start;
+        this.end = end;
     }
     
     @Override
@@ -39,18 +43,21 @@ public class PostDataThread extends Thread{
         try {
             //To call the HTTP endpoints iterationNum times
             RestClient myClient = new RestClient(url);
-            long startTime = System.currentTimeMillis();
-            doPost(myClient);
-            long latency = System.currentTimeMillis() - startTime;
-            latencies.add(latency);
+            for(int i = start; i <= end; i++){
+                long startTime = System.currentTimeMillis();
+                doPost(myClient, dataList.get(i));
+                long latency = System.currentTimeMillis() - startTime;
+                latencies.add(latency);
+            }
+            
             barrier.await();
         } catch (InterruptedException | BrokenBarrierException ex) {
             Logger.getLogger(GetDataThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void doPost(RestClient client){
-        int status = client.postData(queue.poll());
+    private void doPost(RestClient client, RFIDLiftData data){
+        int status = client.postData(data);
         requestCount++;
         
         if(status == 200){

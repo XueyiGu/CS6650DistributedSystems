@@ -13,11 +13,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Singleton;
 
 /**
  *
  * @author ceres
  */
+@Singleton
 public class RFIDLiftDAO {
     private static RFIDLiftDAO instance = null;
     private static String RFIDLiftDAO_NAME = RFIDLiftDAO.class.getName();
@@ -56,7 +58,7 @@ public class RFIDLiftDAO {
         }
     }
     
-    public long insertData(RFIDLiftData data) {
+    public long insertData(RFIDLiftData data) throws SQLException {
         String statement = "INSERT INTO skidata " + 
         "(resort_id, day_num, skier_id, lift_id, timestamp)  " +
         "VALUES (?, ?, ?, ?, ?);";
@@ -78,13 +80,21 @@ public class RFIDLiftDAO {
                     if (rs.next()) {
                         id = rs.getLong(1);
                     }
+                    rs.close();
                 } catch (SQLException ex) {
                     Logger.getLogger(RFIDLiftDAO_NAME).log(Level.SEVERE, null, ex);
                 }
             }
             insertStatement.close();
+            
         } catch (SQLException ex) {
             Logger.getLogger(RFIDLiftDAO_NAME).log(Level.SEVERE, null, ex);
+        }
+        finally{
+            if(connection != null && !connection.isClosed()){
+                connection.close();
+            }
+            
         }
         return id;        
     }

@@ -99,7 +99,7 @@ public class ClientTools {
             bReader.readLine();
             String nextLine = bReader.readLine();
             int i = 0;
-            while(nextLine != null && i < 100){
+            while(nextLine != null){
                 String[] items = nextLine.split(",");
                 String resortID = items[0];
                 String dayNum = items[1];
@@ -113,7 +113,7 @@ public class ClientTools {
                 
                 //System.out.println(queue.size());
                 nextLine = bReader.readLine();
-                i++;
+                //i++;
             }
             System.out.println("Number of rows " + dataList.size());
             bReader.close();

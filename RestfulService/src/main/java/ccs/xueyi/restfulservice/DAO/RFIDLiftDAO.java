@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Singleton;
@@ -94,9 +95,37 @@ public class RFIDLiftDAO {
             if(connection != null && !connection.isClosed()){
                 connection.close();
             }
-            
         }
         return id;        
+    }
+    
+    public void bathInsertData(List<RFIDLiftData> dataList) throws SQLException{
+        String statement = "INSERT INTO skidata " + 
+        "(resort_id, day_num, skier_id, lift_id, timestamp)  " +
+        "VALUES (?, ?, ?, ?, ?);";
+        Connection connection = null;
+        PreparedStatement insertStatement = null;
+        try {
+            connection = ConnectionManager.connect();
+            insertStatement = connection.prepareStatement(statement);
+            int size = dataList.size();
+            for(int i = 0; i < size; i++){
+                insertStatement.setString(1, dataList.get(i).getResortID());
+                insertStatement.setString(2, dataList.get(i).getDayNum());
+                insertStatement.setString(3, dataList.get(i).getSkierID());
+                insertStatement.setInt(4, Integer.parseInt(dataList.get(i).getLiftID()));
+                insertStatement.setString(5, dataList.get(i).getTimestamp());
+                insertStatement.executeUpdate();
+            }
+            insertStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(RFIDLiftDAO_NAME).log(Level.SEVERE, null, ex);
+        }
+        finally{
+            if(connection != null && !connection.isClosed()){
+                connection.close();
+            }
+        }
     }
     
     public RFIDLiftData findData(String skierID, String dayNum){

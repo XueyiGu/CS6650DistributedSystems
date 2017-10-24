@@ -2,8 +2,11 @@ package ccs.xueyi.restfulservice;
 
 import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
 import ccs.xueyi.restfulservice.DAO.SkierMetricDAO;
+import ccs.xueyi.restfulservice.cache.RFIDLiftCache;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -11,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 
 /**
@@ -44,19 +48,34 @@ public class RestServer {
     
     @POST
     @Path("/load")
-    @Produces(MediaType.TEXT_PLAIN)
     @Consumes(MediaType.APPLICATION_JSON)
-    public long postData(RFIDLiftData data) {
+    public Response postData(RFIDLiftData data) {
+        
+        insertWithCache(data);
+        return Response.status(201).entity(data).build(); 
+    } 
+    
+    private void insertWithCache(RFIDLiftData data){
+        if(RFIDLiftCache.getInstance().getCacheSize() < 100){
+            RFIDLiftCache.getInstance().addToCache(data);
+        }else{
+            try {
+                rfidLifDAO.bathInsertData(RFIDLiftCache.getInstance().getCache());
+            } catch (SQLException ex) {
+                Logger.getLogger(RestServer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    private void insertWithoutCache(RFIDLiftData data){
         long recordID = 0;
         long metricID = 0;
         if(data != null){
             try {
                 recordID = rfidLifDAO.insertData(data);
-                metricID = sMetricDAO.updateMetrics(data);
+                metricID = sMetricDAO.upsertMetrics(data);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
-        return recordID; 
-    } 
+    }
 }

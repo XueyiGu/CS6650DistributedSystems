@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Singleton;
@@ -73,7 +74,7 @@ public class SkierMetricDAO {
     }
      
      
-     public long updateMetrics(RFIDLiftData data) throws SQLException{
+     public long upsertMetrics(RFIDLiftData data) throws SQLException{
          String stmt = " INSERT INTO skiermetrics (id, skier_id, day_num, "
                 + " total_vertical, lift_num) VALUES(?, ?, ?, ?, ?) " + 
                 " ON CONFLICT (id) DO UPDATE SET " +
@@ -113,4 +114,35 @@ public class SkierMetricDAO {
         return id;
      }
      
+     public void batchUpsertMetrics(List<RFIDLiftData> dataList) throws SQLException{
+         String stmt = " INSERT INTO skiermetrics (id, skier_id, day_num, "
+                + " total_vertical, lift_num) VALUES(?, ?, ?, ?, ?) " + 
+                " ON CONFLICT (id) DO UPDATE SET " +
+                " total_vertical =  skiermetrics.total_vertical + EXCLUDED.total_vertical, " +
+                " lift_num = skiermetrics.lift_num + EXCLUDED.lift_num ";
+        Connection connection = null;
+        PreparedStatement upsertStmt = null;
+        long id = 0;
+        
+        try {
+            connection = ConnectionManager.connect();
+            upsertStmt = connection.prepareStatement(stmt);
+            int size = dataList.size();
+            for(int i = 0; i < size; i++){
+                upsertStmt.setString(1, dataList.get(i).getSkierID() + "|" + dataList.get(i).getDayNum());
+                upsertStmt.setString(2, dataList.get(i).getSkierID());
+                upsertStmt.setString(3, dataList.get(i).getDayNum());
+                upsertStmt.setInt(4, dataList.get(i).getVertical());
+                upsertStmt.setInt(5, 1);
+                upsertStmt.executeUpdate();
+            }
+            upsertStmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(SKIERMETRICDAO_NAME).log(Level.SEVERE, null, ex);
+        }  finally {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+     }
 }

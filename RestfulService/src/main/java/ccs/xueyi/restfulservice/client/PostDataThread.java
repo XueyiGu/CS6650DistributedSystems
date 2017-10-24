@@ -60,7 +60,7 @@ public class PostDataThread extends Thread{
         int status = client.postData(data);
         requestCount++;
         
-        if(status == 200){
+        if(status == 201){
             successCount++;
         }
     }

@@ -99,7 +99,7 @@ public class ClientTools {
             bReader.readLine();
             String nextLine = bReader.readLine();
             int i = 0;
-            while(nextLine != null && i < 200000){
+            while(nextLine != null && i < 100){
                 String[] items = nextLine.split(",");
                 String resortID = items[0];
                 String dayNum = items[1];

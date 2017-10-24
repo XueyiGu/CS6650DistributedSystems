@@ -17,6 +17,8 @@ public class RFIDLiftData{
     private String timestamp;
     private String skierID;
     private String liftID;
+    
+    private static final int[] VERTICAL = {200, 300, 400, 500};
 
     public RFIDLiftData(String id, String resortID, String dayNum, String timestamp, String skierID, String liftID) {
         this.id = id;
@@ -92,5 +94,9 @@ public class RFIDLiftData{
                 ", skierID=" + skierID + ", liftID=" + liftID + '}';
     }
     
+       public int getVertical() {
+        int index = (Integer.parseInt(liftID) - 1) / 10;
+        return VERTICAL[index];
+    }
     
 }

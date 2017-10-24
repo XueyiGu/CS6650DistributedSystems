@@ -66,7 +66,6 @@ public class ClientEntrance {
         } catch (TimeoutException ex) {
             Logger.getLogger(ClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
     
 }

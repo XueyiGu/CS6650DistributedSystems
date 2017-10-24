@@ -52,7 +52,7 @@ public class RestServer {
         if(data != null){
             try {
                 recordID = rfidLifDAO.insertData(data);
-                //metricID = sMetricDAO.updateMetrics(data);
+                metricID = sMetricDAO.updateMetrics(data);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

@@ -74,11 +74,11 @@ public class SkierMetricDAO {
      
      
      public long updateMetrics(RFIDLiftData data) throws SQLException{
-         String stmt = "INSERT INTO skiermetrics (skier_id, day_num, "
-                + "total_vertical, lift_num) VALUES(?,?,?,?) " + 
-                "ON CONFLICT (skier_id, day_num) DO UPDATE SET " +
-                "total_vertical =  skiermetrics.total_vertical + EXCLUDED.total_vertical, " +
-                "lift_num = skiermetrics.lift_num + EXCLUDED.lift_num";
+         String stmt = " INSERT INTO skiermetrics (id, skier_id, day_num, "
+                + " total_vertical, lift_num) VALUES(?, ?, ?, ?, ?) " + 
+                " ON CONFLICT (id) DO UPDATE SET " +
+                " total_vertical =  skiermetrics.total_vertical + EXCLUDED.total_vertical, " +
+                " lift_num = skiermetrics.lift_num + EXCLUDED.lift_num ";
         Connection connection = null;
         PreparedStatement upsertStmt = null;
         long id = 0;
@@ -86,16 +86,18 @@ public class SkierMetricDAO {
         try {
             connection = ConnectionManager.connect();
             upsertStmt = connection.prepareStatement(stmt);
-            upsertStmt.setString(1, data.getSkierID());
-            upsertStmt.setString(2, data.getDayNum());
-            upsertStmt.setInt(3, data.getVertical());
-            upsertStmt.setInt(4, 1);
+            upsertStmt.setString(1, data.getSkierID() + "|" + data.getDayNum());
+            upsertStmt.setString(2, data.getSkierID());
+            upsertStmt.setString(3, data.getDayNum());
+            upsertStmt.setInt(4, data.getVertical());
+            upsertStmt.setInt(5, 1);
             int affectedRows = upsertStmt.executeUpdate();
             if (affectedRows > 0) {
                 try (ResultSet rs = upsertStmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         id = rs.getLong(1);
                     }
+                    rs.close();
                 } catch (SQLException ex) {
                     Logger.getLogger(SKIERMETRICDAO_NAME).log(Level.SEVERE, null, ex);
                 }

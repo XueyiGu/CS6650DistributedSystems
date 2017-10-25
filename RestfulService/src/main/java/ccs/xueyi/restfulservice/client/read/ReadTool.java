@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ccs.xueyi.restfulservice.client;
+package ccs.xueyi.restfulservice.client.read;
 
 
+import ccs.xueyi.restfulservice.client.*;
 import ccs.xueyi.restfulservice.client.write.WriteDataThread;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.io.BufferedReader;
@@ -27,14 +28,14 @@ import java.util.logging.Logger;
  *
  * @author ceres
  */
-public class ClientTools {
+public class ReadTool {
     private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day1.csv";
     
     private String url;
     private int threadNum = 10;
     private int requestCount = 0;
     private int successCount = 0;
-    private List<WriteDataThread> threads = new ArrayList<>();
+    private List<ReadDataThread> threads = new ArrayList<>();
     
     private long startTime = 0;
     private long finishTime = 0;
@@ -70,13 +71,13 @@ public class ClientTools {
             try {
                 chartGenerator.getChart(latencyArray, "Throughput");
             } catch (IOException ex) {
-                Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
     }
 
-    public ClientTools(String url, int threadNum) {
+    public ReadTool(String url, int threadNum) {
         this.url = url;
         this.threadNum = threadNum;
     }
@@ -92,7 +93,7 @@ public class ClientTools {
             int start = partitionSize * i;
             int end = Math.min(partitionSize * (i + 1), dataList.size()) - 1;
             //System.out.println("Start is "+ start + " and end is " + end);
-            WriteDataThread t = new WriteDataThread(url, barrier, dataList, start, end);
+            ReadDataThread t = new ReadDataThread(url, barrier, dataList, start, end);
             threads.add(t);
             t.start();
         }
@@ -126,17 +127,17 @@ public class ClientTools {
             System.out.println("Number of rows " + dataList.size());
             bReader.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
 
     public static void main(String[] args){
-        ClientTools ct = new ClientTools("", 5432);
+        ReadTool ct = new ReadTool("", 5432);
         try {
             ct.fileReader();
         } catch (IOException ex) {
-            Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     public void setFILE_NAME(String FILE_NAME) {
@@ -155,7 +156,7 @@ public class ClientTools {
     }
     
     private void getCounts(){
-        for(WriteDataThread t : threads){
+        for(ReadDataThread t : threads){
             successCount += t.getSuccessCount();
             requestCount += t.getRequestCount();
         }
@@ -166,7 +167,7 @@ public class ClientTools {
         long latencySum = 0;
         latencyArray = new long[requestCount];
         int count = 0;
-        for(WriteDataThread t : threads){
+        for(ReadDataThread t : threads){
             for(long l : t.getLatency()){
                 latencyArray[count++] = l;
                 latencySum += l;

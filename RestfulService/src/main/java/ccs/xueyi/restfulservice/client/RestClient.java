@@ -41,10 +41,12 @@ public class RestClient {
         return status;
     }
     
-    public RFIDLiftData getData(String skierID, String dayNum) throws ClientErrorException{
-        RFIDLiftData data = webTarget.path("/myvert/{"+ skierID + "}&{"+dayNum+"}")
+    public int getData(String skierID, String dayNum) throws ClientErrorException{
+        Response response = webTarget.path("/myvert/{"+ skierID + "}&{"+dayNum+"}")
                 .request(MediaType.APPLICATION_JSON)
-                .get(RFIDLiftData.class);
-        return data;
+                .get();
+        int status = response.getStatus();
+        response.close();
+        return status;
     } 
 }

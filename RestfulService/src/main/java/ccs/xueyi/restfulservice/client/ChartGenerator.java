@@ -33,8 +33,8 @@ public class ChartGenerator extends JFrame{
         }
         dataCollection.addSeries(series);
         
-        JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, "Rank", 
-                "Latancies", dataCollection);
+        JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, "Ranking", 
+                "Latancy", dataCollection);
         
         File file = new File(chartTitle);
         ChartUtilities.saveChartAsJPEG(file, chart, 500, 270);

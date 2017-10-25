@@ -3,6 +3,7 @@ package ccs.xueyi.restfulservice;
 import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
 import ccs.xueyi.restfulservice.DAO.SkierMetricDAO;
 import ccs.xueyi.restfulservice.cache.DataCache;
+import ccs.xueyi.restfulservice.cache.ScheduledCacheExecuter;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.sql.SQLException;
 import java.util.List;
@@ -28,6 +29,9 @@ public class RestServer {
     private static final String FAILURE_RESULT="<result>failure</result>";
     private final RFIDLiftDAO rfidLifDAO = RFIDLiftDAO.getInstance();
     private final SkierMetricDAO sMetricDAO = SkierMetricDAO.getInstance();
+    static{
+        ScheduledCacheExecuter.init();
+    }
     /**
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "text/plain" media type.
@@ -36,7 +40,6 @@ public class RestServer {
      * @param dayNum
      * @return String that will be returned as a text/plain response.
      */
-    
     @GET
     @Path("/myvert/{skierID}&{dayNum}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,17 +60,18 @@ public class RestServer {
     } 
     
     private void insertWithCache(RFIDLiftData data){
-        if(DataCache.getInstance().getCacheSize() < 100){
-            DataCache.getInstance().addToCache(data);
-        }else{
-            try {
-                List<RFIDLiftData> dataList = DataCache.getInstance().getCache();
-                rfidLifDAO.bathInsertData(dataList);
-                sMetricDAO.batchUpsertMetrics(dataList);
-            } catch (SQLException ex) {
-                Logger.getLogger(RestServer.class.getName()).log(Level.SEVERE, null, ex);
-            }   
-        }
+        DataCache.getInstance().addToCache(data);
+//        if(DataCache.getInstance().getCacheSize() < 100){
+//            DataCache.getInstance().addToCache(data);
+//        }else{
+//            try {
+//                List<RFIDLiftData> dataList = DataCache.getInstance().getCache();
+//                rfidLifDAO.bathInsertData(dataList);
+//                sMetricDAO.batchUpsertMetrics(dataList);
+//            } catch (SQLException ex) {
+//                Logger.getLogger(RestServer.class.getName()).log(Level.SEVERE, null, ex);
+//            }   
+//        }
     }
     
     private void insertWithoutCache(RFIDLiftData data){

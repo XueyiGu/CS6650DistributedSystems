@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ccs.xueyi.restfulservice.client;
+package ccs.xueyi.restfulservice.client.read;
 
 
+import ccs.xueyi.restfulservice.client.RestClient;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,19 +20,24 @@ import java.util.logging.Logger;
  *
  * @author ceres
  */
-public class GetDataThread extends Thread{
+public class ReadDataThread extends Thread{
     
     private int requestCount = 0;
     private int successCount = 0;
     private String url;
     private List<Long> latencies = new ArrayList<>();
     private CyclicBarrier barrier;
-    private ConcurrentLinkedQueue<RFIDLiftData> queue;
+    private List<RFIDLiftData> dataList;
+    private int start;
+    private int end;
     
-    public GetDataThread(String url, CyclicBarrier barrier, ConcurrentLinkedQueue<RFIDLiftData> queue){
+    public ReadDataThread(String url, CyclicBarrier barrier, 
+            List<RFIDLiftData> dataList, int start, int end){
         this.url = url;
         this.barrier = barrier;
-        this.queue = queue;
+        this.dataList = dataList;
+        this.start = start;
+        this.end = end;
     }
     
     @Override
@@ -39,22 +45,25 @@ public class GetDataThread extends Thread{
         try {
             //To call the HTTP endpoints iterationNum times
             RestClient myClient = new RestClient(url);
-            long startTime = System.currentTimeMillis();
-            doGet(myClient);
-            long latency = System.currentTimeMillis() - startTime;
-            latencies.add(latency);
+            for(int i = start; i <= end; i++){
+                long startTime = System.currentTimeMillis();
+                doGet(myClient, dataList.get(i));
+                long latency = System.currentTimeMillis() - startTime;
+                latencies.add(latency);
+            }
+            
             barrier.await();
         } catch (InterruptedException | BrokenBarrierException ex) {
-            Logger.getLogger(GetDataThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadDataThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    private void doGet(RestClient client){
+    private void doGet(RestClient client, RFIDLiftData data){
        //TO-DO
-       String get = "client.getData()";
+       int status = client.getData(data.getSkierID(), data.getDayNum());
         requestCount++;
         
-        if("Got it!".equals(get)){
+        if(status == 200){
             successCount++;
         }
     }

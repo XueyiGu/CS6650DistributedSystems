@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,12 +101,13 @@ public class RFIDLiftDAO {
         return id;        
     }
     
-    public void bathInsertData(List<RFIDLiftData> dataList) throws SQLException{
+    public List<RFIDLiftData> bathInsertData(List<RFIDLiftData> dataList) throws SQLException{
         String statement = "INSERT INTO skidata " + 
         "(resort_id, day_num, skier_id, lift_id, timestamp)  " +
         "VALUES (?, ?, ?, ?, ?);";
         Connection connection = null;
         PreparedStatement insertStatement = null;
+        List<RFIDLiftData> failedList = new ArrayList<>();
         try {
             connection = ConnectionManager.connect();
             insertStatement = connection.prepareStatement(statement);
@@ -115,8 +118,15 @@ public class RFIDLiftDAO {
                 insertStatement.setString(3, dataList.get(i).getSkierID());
                 insertStatement.setInt(4, Integer.parseInt(dataList.get(i).getLiftID()));
                 insertStatement.setString(5, dataList.get(i).getTimestamp());
-                insertStatement.executeUpdate();
+                insertStatement.addBatch();
             }
+            int[] results = insertStatement.executeBatch();
+            for (int i = 0; i < results.length; i++) {
+                if (results[i] == Statement.EXECUTE_FAILED) {
+                    failedList.add(dataList.get(i));
+                }
+            }
+            
             insertStatement.close();
         } catch (SQLException ex) {
             Logger.getLogger(RFIDLiftDAO_NAME).log(Level.SEVERE, null, ex);
@@ -126,6 +136,7 @@ public class RFIDLiftDAO {
                 connection.close();
             }
         }
+        return failedList;
     }
     
     public RFIDLiftData findData(String skierID, String dayNum){

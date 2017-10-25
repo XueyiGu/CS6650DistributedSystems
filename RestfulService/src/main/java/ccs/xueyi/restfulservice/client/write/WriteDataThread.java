@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ccs.xueyi.restfulservice.client;
+package ccs.xueyi.restfulservice.client.write;
 
 
+import ccs.xueyi.restfulservice.client.RestClient;
+import ccs.xueyi.restfulservice.client.read.ReadDataThread;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.logging.Logger;
  *
  * @author ceres
  */
-public class PostDataThread extends Thread{
+public class WriteDataThread extends Thread{
      
     private int requestCount = 0;
     private int successCount = 0;
@@ -29,7 +31,7 @@ public class PostDataThread extends Thread{
     private int start;
     private int end;
     
-    public PostDataThread(String url, CyclicBarrier barrier, 
+    public WriteDataThread(String url, CyclicBarrier barrier, 
             List<RFIDLiftData> dataList, int start, int end){
         this.url = url;
         this.barrier = barrier;
@@ -52,7 +54,7 @@ public class PostDataThread extends Thread{
             
             barrier.await();
         } catch (InterruptedException | BrokenBarrierException ex) {
-            Logger.getLogger(GetDataThread.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadDataThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

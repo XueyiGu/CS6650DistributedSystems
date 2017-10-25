@@ -3,9 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ccs.xueyi.restfulservice.client;
+package ccs.xueyi.restfulservice.client.write;
 
 
+import ccs.xueyi.restfulservice.client.*;
 import ccs.xueyi.restfulservice.client.write.WriteDataThread;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.io.BufferedReader;
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
  *
  * @author ceres
  */
-public class ClientTools {
+public class WriteTool {
     private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day1.csv";
     
     private String url;
@@ -70,13 +71,13 @@ public class ClientTools {
             try {
                 chartGenerator.getChart(latencyArray, "Throughput");
             } catch (IOException ex) {
-                Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(WriteTool.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
     }
 
-    public ClientTools(String url, int threadNum) {
+    public WriteTool(String url, int threadNum) {
         this.url = url;
         this.threadNum = threadNum;
     }
@@ -126,17 +127,17 @@ public class ClientTools {
             System.out.println("Number of rows " + dataList.size());
             bReader.close();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WriteTool.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
 
     public static void main(String[] args){
-        ClientTools ct = new ClientTools("", 5432);
+        WriteTool ct = new WriteTool("", 5432);
         try {
             ct.fileReader();
         } catch (IOException ex) {
-            Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(WriteTool.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     public void setFILE_NAME(String FILE_NAME) {

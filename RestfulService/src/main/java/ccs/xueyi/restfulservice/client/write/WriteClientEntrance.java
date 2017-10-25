@@ -6,6 +6,7 @@
 package ccs.xueyi.restfulservice.client.write;
 
 import ccs.xueyi.restfulservice.client.*;
+import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.CyclicBarrier;
@@ -42,13 +43,13 @@ public class WriteClientEntrance {
             }
         }
         String url = ip + ":" + port;
-        final ClientTools processor = new ClientTools(url, threadNum);
+        final WriteTool writeTool = new WriteTool(url, threadNum);
         
         Thread readFile = new Thread(new Runnable(){
             @Override
             public void run() {
                 try {
-                    processor.fileReader();
+                    writeTool.fileReader();
                 } catch (IOException ex) {
                     Logger.getLogger(WriteClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -63,7 +64,7 @@ public class WriteClientEntrance {
         System.out.println("Finished reading file");
         
         try {
-            processor.startThread();
+            writeTool.startThread();
         } catch (TimeoutException ex) {
             Logger.getLogger(WriteClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
         }

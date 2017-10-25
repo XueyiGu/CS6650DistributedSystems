@@ -2,10 +2,12 @@ package ccs.xueyi.restfulservice;
 
 import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
 import ccs.xueyi.restfulservice.DAO.SkierMetricDAO;
+import ccs.xueyi.restfulservice.cache.CacheExecutor;
 import ccs.xueyi.restfulservice.cache.DataCache;
-import ccs.xueyi.restfulservice.cache.ScheduledCacheExecuter;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
+import ccs.xueyi.restfulservice.model.SkierMetric;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,9 +31,7 @@ public class RestServer {
     private static final String FAILURE_RESULT="<result>failure</result>";
     private final RFIDLiftDAO rfidLifDAO = RFIDLiftDAO.getInstance();
     private final SkierMetricDAO sMetricDAO = SkierMetricDAO.getInstance();
-    static{
-        ScheduledCacheExecuter.init();
-    }
+
     /**
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "text/plain" media type.
@@ -43,35 +43,32 @@ public class RestServer {
     @GET
     @Path("/myvert/{skierID}&{dayNum}")
     @Produces(MediaType.APPLICATION_JSON)
-    public RFIDLiftData getData(
+    public SkierMetric getData(
                         @PathParam("skierID") String skierID,
-                        @PathParam("dayNum") String dayNum) {
-        RFIDLiftData data = rfidLifDAO.findData(skierID, dayNum);
+                        @PathParam("dayNum") String dayNum) throws SQLException {
+       // System.out.println("Did search for " + skierID + " and " + dayNum );
+        SkierMetric data = sMetricDAO.findSkiMetricByFilter(skierID, dayNum);
         return data;
     }
-    
+  
     @POST
     @Path("/load")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postData(RFIDLiftData data) {
-        
+//        insertWithoutCache(data);
         insertWithCache(data);
         return Response.status(201).entity(data).build(); 
     } 
     
     private void insertWithCache(RFIDLiftData data){
+        if(data.isLastone()){
+            List<RFIDLiftData> dataList = new ArrayList<>(DataCache.getInstance().getCache());
+            CacheExecutor executor = new CacheExecutor(dataList);
+            executor.start();
+            DataCache.getInstance().clearCache();
+            return;
+        }
         DataCache.getInstance().addToCache(data);
-//        if(DataCache.getInstance().getCacheSize() < 100){
-//            DataCache.getInstance().addToCache(data);
-//        }else{
-//            try {
-//                List<RFIDLiftData> dataList = DataCache.getInstance().getCache();
-//                rfidLifDAO.bathInsertData(dataList);
-//                sMetricDAO.batchUpsertMetrics(dataList);
-//            } catch (SQLException ex) {
-//                Logger.getLogger(RestServer.class.getName()).log(Level.SEVERE, null, ex);
-//            }   
-//        }
     }
     
     private void insertWithoutCache(RFIDLiftData data){

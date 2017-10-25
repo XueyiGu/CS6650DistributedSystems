@@ -101,7 +101,7 @@ public class RFIDLiftDAO {
         return id;        
     }
     
-    public List<RFIDLiftData> bathInsertData(List<RFIDLiftData> dataList) throws SQLException{
+    public void bathInsertData(List<RFIDLiftData> dataList) throws SQLException{
         String statement = "INSERT INTO skidata " + 
         "(resort_id, day_num, skier_id, lift_id, timestamp)  " +
         "VALUES (?, ?, ?, ?, ?);";
@@ -120,12 +120,7 @@ public class RFIDLiftDAO {
                 insertStatement.setString(5, dataList.get(i).getTimestamp());
                 insertStatement.addBatch();
             }
-            int[] results = insertStatement.executeBatch();
-            for (int i = 0; i < results.length; i++) {
-                if (results[i] == Statement.EXECUTE_FAILED) {
-                    failedList.add(dataList.get(i));
-                }
-            }
+            insertStatement.executeBatch();
             
             insertStatement.close();
         } catch (SQLException ex) {
@@ -136,7 +131,6 @@ public class RFIDLiftDAO {
                 connection.close();
             }
         }
-        return failedList;
     }
     
     public RFIDLiftData findData(String skierID, String dayNum){

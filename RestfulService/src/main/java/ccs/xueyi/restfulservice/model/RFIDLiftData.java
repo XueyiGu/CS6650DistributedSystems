@@ -17,6 +17,7 @@ public class RFIDLiftData{
     private String timestamp;
     private String skierID;
     private String liftID;
+    private boolean lastone;
     
     private static final int[] VERTICAL = {200, 300, 400, 500};
 
@@ -36,7 +37,20 @@ public class RFIDLiftData{
         this.skierID = skierID;
         this.liftID = liftID;
     }
+
+    public RFIDLiftData(String dayNum, String skierID) {
+        this.dayNum = dayNum;
+        this.skierID = skierID;
+    }
+    
+    
     public RFIDLiftData(){}
+
+    public RFIDLiftData(boolean lastone) {
+        this.lastone = lastone;
+    }
+    
+    
 
     public String getId() {
         return id;
@@ -85,6 +99,14 @@ public class RFIDLiftData{
     //@XmlElement
     public void setLiftID(String liftID) {
         this.liftID = liftID;
+    }
+
+    public boolean isLastone() {
+        return lastone;
+    }
+
+    public void setLastone(boolean lastone) {
+        this.lastone = lastone;
     }
 
     @Override

@@ -53,7 +53,11 @@ public class WriteTool {
 
         @Override
         public void run() {
-            
+            //send the terminaltion signal
+            RFIDLiftData ternimation = new RFIDLiftData(true);
+            RestClient myClient = new RestClient(url);
+            myClient.postData(ternimation);
+        
             getCounts();
             System.out.println("Totoal number of request send: " + requestCount);
             System.out.println("Total number of successfull responses: " + successCount);
@@ -69,7 +73,7 @@ public class WriteTool {
             
             ChartGenerator chartGenerator = new ChartGenerator();
             try {
-                chartGenerator.getChart(latencyArray, "Throughput");
+                chartGenerator.getChart(latencyArray, "Throughput - Write");
             } catch (IOException ex) {
                 Logger.getLogger(WriteTool.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -92,7 +96,7 @@ public class WriteTool {
         for(int i = 0; i < threadNum; i++){
             int start = partitionSize * i;
             int end = Math.min(partitionSize * (i + 1), dataList.size()) - 1;
-            //System.out.println("Start is "+ start + " and end is " + end);
+            System.out.println("Start is "+ start + " and end is " + end);
             WriteDataThread t = new WriteDataThread(url, barrier, dataList, start, end);
             threads.add(t);
             t.start();

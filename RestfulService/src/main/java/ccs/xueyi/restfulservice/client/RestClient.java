@@ -42,8 +42,8 @@ public class RestClient {
     }
     
     public int getData(String skierID, String dayNum) throws ClientErrorException{
-        Response response = webTarget.path("/myvert/{"+ skierID + "}&{"+dayNum+"}")
-                .request(MediaType.APPLICATION_JSON)
+        Response response = webTarget.path("/myvert/"+ skierID + "&" + dayNum)
+                .request()
                 .get();
         int status = response.getStatus();
         response.close();

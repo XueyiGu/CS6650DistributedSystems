@@ -5,8 +5,6 @@
  */
 package ccs.xueyi.restfulservice.client.read;
 
-import ccs.xueyi.restfulservice.client.*;
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeoutException;
@@ -42,30 +40,13 @@ public class ReadClientEntrance {
             }
         }
         String url = ip + ":" + port;
-        final ClientTools processor = new ClientTools(url, threadNum);
+        final ReadTool readTool = new ReadTool(url, threadNum);
         
         //Make skier entry for 40k skiers
-        
-//        Thread readFile = new Thread(new Runnable(){
-//            @Override
-//            public void run() {
-//                try {
-//                    processor.fileReader();
-//                } catch (IOException ex) {
-//                    Logger.getLogger(ReadClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-//            }
-//        });
-//        readFile.start();
-//        try {
-//            readFile.join();
-//        } catch (InterruptedException ex) {
-//            Logger.getLogger(ReadClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        System.out.println("Finished reading file");
-//        
+        readTool.loadEntry();
+               
         try {
-            processor.startThread();
+            readTool.startThread();
         } catch (TimeoutException ex) {
             Logger.getLogger(ReadClientEntrance.class.getName()).log(Level.SEVERE, null, ex);
         }

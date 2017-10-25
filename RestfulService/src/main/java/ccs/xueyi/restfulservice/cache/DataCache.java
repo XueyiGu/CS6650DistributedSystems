@@ -5,9 +5,17 @@
  */
 package ccs.xueyi.restfulservice.cache;
 
+import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
+import ccs.xueyi.restfulservice.DAO.SkierMetricDAO;
+import ccs.xueyi.restfulservice.RestServer;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import static java.util.Collections.list;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Singleton;
 
 /**
@@ -18,9 +26,12 @@ import javax.inject.Singleton;
 public class DataCache {
     private static DataCache instance = null;
     private List<RFIDLiftData> cache = null;
+    private int BATCH_SIZE = 1000;
+    private final RFIDLiftDAO rfidLifDAO = RFIDLiftDAO.getInstance();
+    private final SkierMetricDAO sMetricDAO = SkierMetricDAO.getInstance();
     
     public DataCache(){
-        cache = new ArrayList<>(); 
+        cache = Collections.synchronizedList(new ArrayList<RFIDLiftData>());
     }
     public static DataCache getInstance(){
         if(instance == null){
@@ -31,12 +42,33 @@ public class DataCache {
     
     public synchronized void addToCache(RFIDLiftData data){
         cache.add(data);
+        if(cache.size() >= BATCH_SIZE){
+            List<RFIDLiftData> dataList = new ArrayList<>(cache);
+            CacheExecutor executor = new CacheExecutor(dataList);
+            executor.start();
+            cache.clear();
+        }
+    }
+    
+    public void moveDataToDB(){
+        try {
+                System.out.println("cache size is " + cache.size());
+                rfidLifDAO.bathInsertData(cache);
+                sMetricDAO.batchUpsertMetrics(cache);
+                cache.clear();
+            } catch (SQLException ex) {
+                Logger.getLogger(RestServer.class.getName()).log(Level.SEVERE, null, ex);
+            } 
     }
     
     public synchronized List<RFIDLiftData> getCache(){
         List<RFIDLiftData> data = new ArrayList<>(cache);
         cache = new ArrayList<>();
         return data;
+    }
+    
+    public synchronized void clearCache(){
+        cache.clear();
     }
     
     public int getCacheSize(){

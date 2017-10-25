@@ -7,11 +7,7 @@ package ccs.xueyi.restfulservice.client.read;
 
 
 import ccs.xueyi.restfulservice.client.*;
-import ccs.xueyi.restfulservice.client.write.WriteDataThread;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -29,7 +25,6 @@ import java.util.logging.Logger;
  * @author ceres
  */
 public class ReadTool {
-    private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day1.csv";
     
     private String url;
     private int threadNum = 10;
@@ -69,7 +64,7 @@ public class ReadTool {
             
             ChartGenerator chartGenerator = new ChartGenerator();
             try {
-                chartGenerator.getChart(latencyArray, "Throughput");
+                chartGenerator.getChart(latencyArray, "Throughput - Read");
             } catch (IOException ex) {
                 Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -98,50 +93,13 @@ public class ReadTool {
             t.start();
         }
     }
-    public void fileReader() throws IOException{
-        if(FILE_NAME == null){
-            return;
+    
+    //load skier entry for get
+    public void loadEntry(){
+        for(int i = 1; i <= 4000; i++){
+            RFIDLiftData data = new RFIDLiftData("1", i + "");
+            dataList.add(data);
         }
-        try {
-            BufferedReader bReader = new BufferedReader(new FileReader(FILE_NAME));
-            //ignore the header line
-            bReader.readLine();
-            String nextLine = bReader.readLine();
-            int i = 0;
-            while(nextLine != null && i < 10000){
-                String[] items = nextLine.split(",");
-                String resortID = items[0];
-                String dayNum = items[1];
-                String skierID = items[2];
-                String liftID = items[3];
-                String timestamp = items[4];
-
-                RFIDLiftData data = new RFIDLiftData(resortID, dayNum, timestamp,
-                                                    skierID, liftID);
-                dataList.add(data);
-                
-                //System.out.println(queue.size());
-                nextLine = bReader.readLine();
-                i++;
-            }
-            System.out.println("Number of rows " + dataList.size());
-            bReader.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-
-    public static void main(String[] args){
-        ReadTool ct = new ReadTool("", 5432);
-        try {
-            ct.fileReader();
-        } catch (IOException ex) {
-            Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    public void setFILE_NAME(String FILE_NAME) {
-        this.FILE_NAME = FILE_NAME;
     }
     
      public void calculateAndPrint(){

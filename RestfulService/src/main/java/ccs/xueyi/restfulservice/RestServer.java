@@ -2,9 +2,10 @@ package ccs.xueyi.restfulservice;
 
 import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
 import ccs.xueyi.restfulservice.DAO.SkierMetricDAO;
-import ccs.xueyi.restfulservice.cache.RFIDLiftCache;
+import ccs.xueyi.restfulservice.cache.DataCache;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
@@ -56,16 +57,19 @@ public class RestServer {
     } 
     
     private void insertWithCache(RFIDLiftData data){
-        if(RFIDLiftCache.getInstance().getCacheSize() < 100){
-            RFIDLiftCache.getInstance().addToCache(data);
+        if(DataCache.getInstance().getCacheSize() < 100){
+            DataCache.getInstance().addToCache(data);
         }else{
             try {
-                rfidLifDAO.bathInsertData(RFIDLiftCache.getInstance().getCache());
+                List<RFIDLiftData> dataList = DataCache.getInstance().getCache();
+                rfidLifDAO.bathInsertData(dataList);
+                sMetricDAO.batchUpsertMetrics(dataList);
             } catch (SQLException ex) {
                 Logger.getLogger(RestServer.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }   
         }
     }
+    
     private void insertWithoutCache(RFIDLiftData data){
         long recordID = 0;
         long metricID = 0;

@@ -43,6 +43,7 @@ public class ClientTools {
     private double medianLatency = 0;
     private long percentile95th = 0;
     private long percentile99th = 0;
+    private long[] latencyArray;
     
     static CyclicBarrier barrier; 
     private List<RFIDLiftData> dataList = new ArrayList<>();
@@ -64,6 +65,13 @@ public class ClientTools {
             finishTime = System.currentTimeMillis();
             System.out.println("All threads completed. Finish time: " + convertTime(finishTime));
             System.out.println("Total wall time: " + (finishTime - startTime) + "ms");
+            
+            ChartGenerator chartGenerator = new ChartGenerator();
+            try {
+                chartGenerator.getChart(latencyArray, "ChartTest");
+            } catch (IOException ex) {
+                Logger.getLogger(ClientTools.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
     }
@@ -83,7 +91,7 @@ public class ClientTools {
         for(int i = 0; i < threadNum; i++){
             int start = partitionSize * i;
             int end = Math.min(partitionSize * (i + 1), dataList.size()) - 1;
-            System.out.println("Start is "+ start + " and end is " + end);
+            //System.out.println("Start is "+ start + " and end is " + end);
             PostDataThread t = new PostDataThread(url, barrier, dataList, start, end);
             threads.add(t);
             t.start();
@@ -99,7 +107,7 @@ public class ClientTools {
             bReader.readLine();
             String nextLine = bReader.readLine();
             int i = 0;
-            while(nextLine != null){
+            while(nextLine != null && i < 10000){
                 String[] items = nextLine.split(",");
                 String resortID = items[0];
                 String dayNum = items[1];
@@ -113,7 +121,7 @@ public class ClientTools {
                 
                 //System.out.println(queue.size());
                 nextLine = bReader.readLine();
-                //i++;
+                i++;
             }
             System.out.println("Number of rows " + dataList.size());
             bReader.close();
@@ -156,7 +164,7 @@ public class ClientTools {
     private void getMetrics(){
         
         long latencySum = 0;
-        long[] latencyArray = new long[requestCount];
+        latencyArray = new long[requestCount];
         int count = 0;
         for(PostDataThread t : threads){
             for(long l : t.getLatency()){

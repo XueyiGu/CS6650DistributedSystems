@@ -60,7 +60,9 @@ public class ReadTool {
             
             finishTime = System.currentTimeMillis();
             System.out.println("All threads completed. Finish time: " + convertTime(finishTime));
-            System.out.println("Total wall time: " + (finishTime - startTime) + "ms");
+            long wallTime = finishTime - startTime;
+            System.out.println("Total wall time: " + wallTime + "ms");
+            System.out.println("Throughput: " + (successCount / (wallTime / 1000)));
             
             ChartGenerator chartGenerator = new ChartGenerator();
             try {

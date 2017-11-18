@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class ConnectionManager {
     private static final String url = "jdbc:postgresql://"
-            + "restinstance.cxq5ozjlz4tr.us-west-2.rds.amazonaws.com:5432/restdb";
+            + "restdb.cbfen4tnebxt.us-west-2.rds.amazonaws.com:5432/restdb";
     private static final String user = "xueyigu";
     private static final String password = "adminadmin";
     

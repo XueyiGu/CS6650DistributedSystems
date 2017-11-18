@@ -2,15 +2,16 @@ package ccs.xueyi.restfulservice;
 
 import ccs.xueyi.restfulservice.DAO.RFIDLiftDAO;
 import ccs.xueyi.restfulservice.DAO.SkierMetricDAO;
-import ccs.xueyi.restfulservice.cache.CacheExecutor;
-import ccs.xueyi.restfulservice.cache.DataCache;
+import ccs.xueyi.restfulservice.cache.MeasureCache;
+import ccs.xueyi.restfulservice.cache.MeasureCacheExecutor;
+import ccs.xueyi.restfulservice.cache.RDFIDCacheExecutor;
+import ccs.xueyi.restfulservice.cache.RFIDLiftCache;
+import ccs.xueyi.restfulservice.model.MeasureData;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import ccs.xueyi.restfulservice.model.SkierMetric;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -55,22 +56,55 @@ public class RestServer {
     @Path("/load")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postData(RFIDLiftData data) {
+        long startTime = System.currentTimeMillis();
+        boolean error = false;
 //        insertWithoutCache(data);
-        insertWithCache(data);
+        try{
+            insertWithCache(data);
+        }catch(Exception e){
+            error = true;
+        }
+        long responseTime = System.currentTimeMillis() - startTime;
+        MeasureData measure = new MeasureData(responseTime, error);
+        saveMeasureData(measure, data);
         return Response.status(201).entity(data).build(); 
     } 
     
+    /**
+     * 
+     * @param data 
+     */
     private void insertWithCache(RFIDLiftData data){
         if(data.isLastone()){
-            List<RFIDLiftData> dataList = new ArrayList<>(DataCache.getInstance().getCache());
-            CacheExecutor executor = new CacheExecutor(dataList);
+            List<RFIDLiftData> dataList = new ArrayList<>(RFIDLiftCache.getInstance().getCache());
+            RDFIDCacheExecutor executor = new RDFIDCacheExecutor(dataList);
             executor.start();
-            DataCache.getInstance().clearCache();
+            RFIDLiftCache.getInstance().clearCache();
             return;
         }
-        DataCache.getInstance().addToCache(data);
+        RFIDLiftCache.getInstance().addToCache(data);
     }
     
+    /**
+     * 
+     * @param measure
+     * @param data 
+     */
+    private void saveMeasureData(MeasureData measure, RFIDLiftData data){
+        if(data.isLastone()){
+            List<MeasureData> dataList = new ArrayList<>(MeasureCache.getInstance().getCache());
+            MeasureCacheExecutor executor = new MeasureCacheExecutor(dataList);
+            executor.start();
+            MeasureCache.getInstance().clearCache();
+            return;
+        }
+        MeasureCache.getInstance().addToCache(measure);
+    }
+    
+    /**
+     * 
+     * @param data 
+     */
     private void insertWithoutCache(RFIDLiftData data){
         long recordID = 0;
         long metricID = 0;

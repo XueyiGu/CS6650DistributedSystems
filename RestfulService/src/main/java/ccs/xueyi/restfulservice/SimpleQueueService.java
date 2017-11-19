@@ -8,6 +8,9 @@ package ccs.xueyi.restfulservice;
 import ccs.xueyi.restfulservice.model.MeasureData;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
@@ -33,10 +36,17 @@ public class SimpleQueueService {
     public static AmazonSQS sqs = null;
     private String queueUrl = null;
     public static AtomicInteger id = new AtomicInteger();
+    private static final String access_key_id = "AKIAIE4ZUNWJ2K464ONQ";
+    private static final String secret_access_key = "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";
     
     public SimpleQueueService(){
         if(sqs == null){
-            sqs = AmazonSQSClientBuilder.defaultClient();
+            BasicAWSCredentials awsCreds = new BasicAWSCredentials(
+                access_key_id, secret_access_key);
+            sqs = AmazonSQSClientBuilder.standard()
+                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                    .withRegion(Regions.US_WEST_2)
+                    .build();
             try {
                 CreateQueueRequest createRequest = new CreateQueueRequest(QUEUE_NAME);
                 queueUrl = sqs.createQueue(createRequest).getQueueUrl();
@@ -55,6 +65,9 @@ public class SimpleQueueService {
         return instance;
     }
     
+    public String getQueueUrl(){
+        return queueUrl;
+    }
     /**
      * 
      * @param msgs 
@@ -71,8 +84,7 @@ public class SimpleQueueService {
             SendMessageBatchRequest smbr = new SendMessageBatchRequest(queueUrl, entries);
             sqs.sendMessageBatch(smbr);
         } catch (AmazonServiceException ase) {
-            System.out.println("Caught an AmazonServiceException, which means your request made it " +
-                    "to Amazon SQS, but was rejected with an error response for some reason.");
+            System.out.println("Caught an AmazonServiceException");
             System.out.println("Error Message:    " + ase.getMessage());
             System.out.println("HTTP Status Code: " + ase.getStatusCode());
             System.out.println("AWS Error Code:   " + ase.getErrorCode());
@@ -91,14 +103,14 @@ public class SimpleQueueService {
      * @return 
      */
     public List<Message> receiveMessages() {
-        System.out.println("Receiving messages from MyQueue.\n");
+        System.out.println("Receiving messages from queue.");
         ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueUrl);
         receiveMessageRequest.setMaxNumberOfMessages(10);
         receiveMessageRequest.setWaitTimeSeconds(20);
         return sqs.receiveMessage(receiveMessageRequest).getMessages();
     }
     
-    public static void displayMessage(List<Message> messages) {
+    public void displayMessage(List<Message> messages) {
         System.out.println("num: " + messages.size());
         for (Message message : messages) {
             System.out.println("  Message");

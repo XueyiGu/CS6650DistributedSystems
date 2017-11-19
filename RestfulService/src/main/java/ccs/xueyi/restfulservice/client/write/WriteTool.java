@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * @author ceres
  */
 public class WriteTool {
-    private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day1.csv";
+    private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day999.csv";
     
     private String url;
     private int threadNum = 10;
@@ -113,7 +113,8 @@ public class WriteTool {
             //ignore the header line
             bReader.readLine();
             String nextLine = bReader.readLine();
-            while(nextLine != null){
+            int i = 0;
+            while(nextLine != null && i < 10000){
                 String[] items = nextLine.split(",");
                 String resortID = items[0];
                 String dayNum = items[1];
@@ -127,6 +128,7 @@ public class WriteTool {
                 
                 //System.out.println(queue.size());
                 nextLine = bReader.readLine();
+                i++;
             }
             System.out.println("Number of rows " + dataList.size());
             bReader.close();

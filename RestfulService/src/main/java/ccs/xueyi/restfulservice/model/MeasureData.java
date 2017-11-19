@@ -10,39 +10,39 @@ package ccs.xueyi.restfulservice.model;
  * @author ceres
  */
 public class MeasureData {
-    private long responseTime;
-    private long queryTime;
+    private int responseTime;
+    private int queryTime;
     private int error;
 
-    public MeasureData(long responseTime, long queryTime, int error) {
+    public MeasureData(int responseTime, int queryTime, int error) {
         this.responseTime = responseTime;
         this.queryTime = queryTime;
         this.error = error;
     }
 
-    public MeasureData(long responseTime, int error) {
+    public MeasureData(int responseTime, int error) {
         this.responseTime = responseTime;
         this.error = error;
     }
 
     
-    public long getResponseTime() {
+    public int getResponseTime() {
         return responseTime;
     }
 
-    public void setResponseTime(long responseTime) {
+    public void setResponseTime(int responseTime) {
         this.responseTime = responseTime;
     }
 
-    public long getQueryTime() {
+    public int getQueryTime() {
         return queryTime;
     }
 
-    public void setQueryTime(long queryTime) {
+    public void setQueryTime(int queryTime) {
         this.queryTime = queryTime;
     }
 
-    public int isError() {
+    public int getError() {
         return error;
     }
 

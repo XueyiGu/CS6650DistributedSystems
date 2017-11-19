@@ -30,6 +30,7 @@ public class Subscriber{
     private static Map<String, Message> receivedMap;
     private static String queueUrl;
     private static long start = System.currentTimeMillis();
+    private static SimpleQueueService sqs;
     private static SubscriberCache cache;
     private static MeasureDAO measureDAO;
 //    private static final ScheduledExecutorService subscriber =
@@ -38,7 +39,17 @@ public class Subscriber{
     public static void main(String[] args) {
         cache = SubscriberCache.getInstance();
         measureDAO = MeasureDAO.getInstance();
+        sqs = SimpleQueueService.getInstance();
+        queueUrl = sqs.getQueueUrl();
         receivedMap = new HashMap<>();
+        
+        try {
+            //create table first
+            measureDAO.createTable();
+        } catch (SQLException ex) {
+            Logger.getLogger(Subscriber.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         ScheduledExecutorService pullExecutor =
             Executors.newSingleThreadScheduledExecutor();
         pullExecutor.scheduleAtFixedRate(new Runnable() {
@@ -63,7 +74,10 @@ public class Subscriber{
      */
     private static void retrievalMessage() {
         try {
-            List<Message> receiveMsgs = SimpleQueueService.getInstance().receiveMessages();
+            List<Message> receiveMsgs = sqs.receiveMessages();
+            System.out.println("****************Display messages****************");
+            sqs.displayMessage(receiveMsgs);
+            
             List<Message> deleteMsgs = new ArrayList<>();
             String messageId;
             if (receiveMsgs.isEmpty()) {
@@ -79,6 +93,7 @@ public class Subscriber{
                     System.out.println("received: " + receivedMap.values().size());
                 }
             }
+            
             SimpleQueueService.deleteSqsMessage(queueUrl, deleteMsgs);
         } catch (Exception ex) {
             ex.printStackTrace();

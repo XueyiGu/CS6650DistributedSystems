@@ -7,11 +7,9 @@ package ccs.xueyi.restfulservice.DAO;
 
 import ccs.xueyi.restfulservice.ConnectionManager;
 import ccs.xueyi.restfulservice.model.MeasureData;
-import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,20 +20,41 @@ import java.util.logging.Logger;
  */
 public class MeasureDAO {
     private static MeasureDAO instance = null;
-    private static String MEASUREDAO_NAME = MeasureDAO.class.getSimpleName();
+    private static final String MEASUREDAO_NAME = MeasureDAO.class.getSimpleName();
     public ConnectionManager manager;
     
     public MeasureDAO(){
         manager = new ConnectionManager();
     }
     
-    public MeasureDAO getInstance(){
+    public static MeasureDAO getInstance(){
         if(instance == null){
             instance = new MeasureDAO();
         }
         return instance;
     }
     
+    public void createTable() throws SQLException{
+        String statement = " drop table if exists measuredata; " +
+                " create table measuredata(id serial PRIMARY KEY NOT NULL," +
+                " response_time INTEGER NOT NULL, " +
+                " error INTEGER NOT NULL) ";
+        Connection connection = null;
+        PreparedStatement createStatement = null;
+        try {
+            connection = ConnectionManager.connect();
+            createStatement = connection.prepareStatement(statement);
+            createStatement.execute();
+            createStatement.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(MeasureDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            if(connection != null && !connection.isClosed()){
+                connection.close();
+            }
+        }
+            
+    }
     public void bathInsertData(List<MeasureData> dataList) throws SQLException{
         String statement = "INSERT INTO measuredata " + 
         "(response_time, error)  " +

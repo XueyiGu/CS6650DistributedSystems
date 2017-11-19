@@ -17,15 +17,15 @@ import java.util.logging.Logger;
  * @author ceres
  */
 public class MeasureCacheExecutor extends Thread{
-    List<String> dataList;
+    List<String> msgs;
     SimpleQueueService sqs = SimpleQueueService.getInstance();
     
-    public MeasureCacheExecutor(List<String> dataList){
-        this.dataList = dataList;
+    public MeasureCacheExecutor(List<String> msgs){
+        this.msgs = msgs;
     }
     @Override
     public void run(){
-        System.out.println("cache size is " + dataList.size());
-        sqs.sendBathRequest(dataList);
+        System.out.println("SQS cache size is " + msgs.size());
+        sqs.sendBathRequest(msgs);
     }
 }

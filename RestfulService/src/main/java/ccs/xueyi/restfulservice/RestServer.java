@@ -94,7 +94,8 @@ public class RestServer {
     private void saveMeasureData(String msg, RFIDLiftData data){
         if(data.isLastone()){
             List<String> dataList = new ArrayList<>(MeasureCache.getInstance().getCache());
-            MeasureCacheExecutor executor = new MeasureCacheExecutor(dataList);
+            List<String> msgs = MeasureCache.getInstance().dataToMessage(dataList);
+            MeasureCacheExecutor executor = new MeasureCacheExecutor(msgs);
             executor.start();
             MeasureCache.getInstance().clearCache();
             return;

@@ -36,13 +36,14 @@ public class MeasureCache {
         if(cache.size() >= BATCH_SIZE){
             List<String> dataList = new ArrayList<>(cache);
             List<String> msgs = dataToMessage(dataList);
+            System.out.println("msfs size is " + msgs.size());
             MeasureCacheExecutor executor = new MeasureCacheExecutor(msgs);
             executor.start();
             cache.clear();
         }
     }
     
-    private List<String> dataToMessage(List<String> dataList){
+    public List<String> dataToMessage(List<String> dataList){
         List<String> msgs = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < dataList.size(); i++){

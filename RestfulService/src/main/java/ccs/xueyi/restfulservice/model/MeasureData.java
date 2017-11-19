@@ -12,15 +12,15 @@ package ccs.xueyi.restfulservice.model;
 public class MeasureData {
     private long responseTime;
     private long queryTime;
-    private boolean error;
+    private int error;
 
-    public MeasureData(long responseTime, long queryTime, boolean error) {
+    public MeasureData(long responseTime, long queryTime, int error) {
         this.responseTime = responseTime;
         this.queryTime = queryTime;
         this.error = error;
     }
 
-    public MeasureData(long responseTime, boolean error) {
+    public MeasureData(long responseTime, int error) {
         this.responseTime = responseTime;
         this.error = error;
     }
@@ -42,11 +42,11 @@ public class MeasureData {
         this.queryTime = queryTime;
     }
 
-    public boolean isError() {
+    public int isError() {
         return error;
     }
 
-    public void setError(boolean error) {
+    public void setError(int error) {
         this.error = error;
     }
     

@@ -5,6 +5,7 @@
  */
 package ccs.xueyi.restfulservice.cache;
 
+import ccs.xueyi.restfulservice.SimpleQueueService;
 import ccs.xueyi.restfulservice.model.MeasureData;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,13 +17,15 @@ import java.util.logging.Logger;
  * @author ceres
  */
 public class MeasureCacheExecutor extends Thread{
-    List<MeasureData> dataList;
+    List<String> dataList;
+    SimpleQueueService sqs = SimpleQueueService.getInstance();
     
-    public MeasureCacheExecutor(List<MeasureData> dataList){
+    public MeasureCacheExecutor(List<String> dataList){
         this.dataList = dataList;
     }
     @Override
     public void run(){
         System.out.println("cache size is " + dataList.size());
+        sqs.sendBathRequest(dataList);
     }
 }

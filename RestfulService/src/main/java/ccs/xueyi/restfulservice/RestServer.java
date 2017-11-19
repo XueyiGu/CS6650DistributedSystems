@@ -57,16 +57,17 @@ public class RestServer {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response postData(RFIDLiftData data) {
         long startTime = System.currentTimeMillis();
-        boolean error = false;
+        //use int to indicate error or not
+        int error = 0;
 //        insertWithoutCache(data);
         try{
             insertWithCache(data);
         }catch(Exception e){
-            error = true;
+            error = 1;
         }
         long responseTime = System.currentTimeMillis() - startTime;
-        MeasureData measure = new MeasureData(responseTime, error);
-        saveMeasureData(measure, data);
+        String msg = dataToString(responseTime, error);
+        saveMeasureData(msg, data);
         return Response.status(201).entity(data).build(); 
     } 
     
@@ -90,17 +91,30 @@ public class RestServer {
      * @param measure
      * @param data 
      */
-    private void saveMeasureData(MeasureData measure, RFIDLiftData data){
+    private void saveMeasureData(String msg, RFIDLiftData data){
         if(data.isLastone()){
-            List<MeasureData> dataList = new ArrayList<>(MeasureCache.getInstance().getCache());
+            List<String> dataList = new ArrayList<>(MeasureCache.getInstance().getCache());
             MeasureCacheExecutor executor = new MeasureCacheExecutor(dataList);
             executor.start();
             MeasureCache.getInstance().clearCache();
             return;
         }
-        MeasureCache.getInstance().addToCache(measure);
+        MeasureCache.getInstance().addToCache(msg);
     }
     
+    /**
+     * 
+     * @param responseTime
+     * @param error
+     * @return 
+     */
+    private String dataToString(long responseTime, int error){
+        StringBuilder sb = new StringBuilder();
+        sb.append(responseTime);
+        sb.append(",");
+        sb.append(error);
+        return sb.toString();
+    }
     /**
      * 
      * @param data 

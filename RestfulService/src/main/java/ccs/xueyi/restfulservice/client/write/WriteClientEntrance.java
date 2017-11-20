@@ -5,8 +5,6 @@
  */
 package ccs.xueyi.restfulservice.client.write;
 
-import ccs.xueyi.restfulservice.client.*;
-import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.CyclicBarrier;

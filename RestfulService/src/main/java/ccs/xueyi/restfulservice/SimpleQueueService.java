@@ -5,6 +5,7 @@
  */
 package ccs.xueyi.restfulservice;
 
+import ccs.xueyi.restfulservice.DAO.AwsDAO;
 import ccs.xueyi.restfulservice.model.MeasureData;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -20,10 +21,14 @@ import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageBatchRequest;
 import com.amazonaws.services.sqs.model.SendMessageBatchRequestEntry;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,13 +41,16 @@ public class SimpleQueueService {
     public static AmazonSQS sqs = null;
     private String queueUrl = null;
     public static AtomicInteger id = new AtomicInteger();
-    private static final String access_key_id = "AKIAIE4ZUNWJ2K464ONQ";
-    private static final String secret_access_key = "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";
-    
+    private Map<String, String> tokens = new HashMap<>();
     public SimpleQueueService(){
         if(sqs == null){
+            try {
+                tokens = AwsDAO.getInstance().getAwsToken();
+            } catch (SQLException ex) {
+                Logger.getLogger(SimpleQueueService.class.getName()).log(Level.SEVERE, null, ex);
+            }
             BasicAWSCredentials awsCreds = new BasicAWSCredentials(
-                access_key_id, secret_access_key);
+                tokens.get("access_key_id"), tokens.get("secret_access_key"));
             sqs = AmazonSQSClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                     .withRegion(Regions.US_WEST_2)
@@ -69,7 +77,8 @@ public class SimpleQueueService {
         return queueUrl;
     }
     /**
-     * 
+     * send multi requests 
+     * max number is 10!!!
      * @param msgs 
      */
     public void sendBathRequest(List<String> msgs){
@@ -84,17 +93,9 @@ public class SimpleQueueService {
             SendMessageBatchRequest smbr = new SendMessageBatchRequest(queueUrl, entries);
             sqs.sendMessageBatch(smbr);
         } catch (AmazonServiceException ase) {
-            System.out.println("Caught an AmazonServiceException");
-            System.out.println("Error Message:    " + ase.getMessage());
-            System.out.println("HTTP Status Code: " + ase.getStatusCode());
-            System.out.println("AWS Error Code:   " + ase.getErrorCode());
-            System.out.println("Error Type:       " + ase.getErrorType());
-            System.out.println("Request ID:       " + ase.getRequestId());
+            System.out.println(ase.getErrorMessage());
         } catch (AmazonClientException ace) {
-            System.out.println("Caught an AmazonClientException, which means the client encountered " +
-                    "a serious internal problem while trying to communicate with SQS, such as not " +
-                    "being able to access the network.");
-            System.out.println("Error Message: " + ace.getMessage());
+            System.out.println(ace.getMessage());
         }
     }
     
@@ -110,22 +111,6 @@ public class SimpleQueueService {
         return sqs.receiveMessage(receiveMessageRequest).getMessages();
     }
     
-    public void displayMessage(List<Message> messages) {
-        System.out.println("num: " + messages.size());
-        for (Message message : messages) {
-            System.out.println("  Message");
-            System.out.println("    MessageId:     " + message.getMessageId());
-            System.out.println("    ReceiptHandle: " + message.getReceiptHandle());
-            System.out.println("    MD5OfBody:     " + message.getMD5OfBody());
-            System.out.println("    Body:          " + message.getBody());
-            for (Map.Entry<String, String> entry : message.getAttributes().entrySet()) {
-                System.out.println("  Attribute");
-                System.out.println("    Name:  " + entry.getKey());
-                System.out.println("    Value: " + entry.getValue());
-            }
-        }
-        System.out.println();
-    }
     
     /**
      * 
@@ -145,4 +130,8 @@ public class SimpleQueueService {
         sqs.deleteMessageBatch(queueUrl, msgs);
     }
 
+    //for test
+    public static void main(String[] args){
+        SimpleQueueService s = SimpleQueueService.getInstance();
+    }
 }

@@ -26,7 +26,8 @@ public class ChartGenerator extends JFrame{
         dataCollection = new XYSeriesCollection();
     }
     
-    public void getChart(long[] dataSet, String chartTitle) throws IOException{
+    public void getChart(long[] dataSet, String chartTitle, String xTile, 
+            String yTitle) throws IOException{
         XYSeries series = new XYSeries(chartTitle);
         for(int i = 0; i < dataSet.length; i++){
             series.add(i, dataSet[i]);

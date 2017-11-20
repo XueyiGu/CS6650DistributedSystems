@@ -7,7 +7,6 @@ package ccs.xueyi.restfulservice.client.write;
 
 
 import ccs.xueyi.restfulservice.client.*;
-import ccs.xueyi.restfulservice.client.write.WriteDataThread;
 import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -53,6 +52,12 @@ public class WriteTool {
 
         @Override
         public void run() {
+            try {
+                //wait from 1s 
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(WriteTool.class.getName()).log(Level.SEVERE, null, ex);
+            }
             //send the terminaltion signal
             RFIDLiftData ternimation = new RFIDLiftData(true);
             RestClient myClient = new RestClient(url);
@@ -75,7 +80,8 @@ public class WriteTool {
             
             ChartGenerator chartGenerator = new ChartGenerator();
             try {
-                chartGenerator.getChart(latencyArray, "Throughput - Write");
+                chartGenerator.getChart(latencyArray, "Throughput - Write", 
+                        "Ranking", "Latancy");
             } catch (IOException ex) {
                 Logger.getLogger(WriteTool.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -97,7 +103,7 @@ public class WriteTool {
         
         for(int i = 0; i < threadNum; i++){
             int start = partitionSize * i;
-            int end = Math.min(partitionSize * (i + 1), dataList.size()) - 1;
+            int end = i == threadNum - 1 ? dataList.size() - 1 : (i + 1) * partitionSize - 1;
             //System.out.println("Start is "+ start + " and end is " + end);
             WriteDataThread t = new WriteDataThread(url, barrier, dataList, start, end);
             threads.add(t);
@@ -114,7 +120,7 @@ public class WriteTool {
             bReader.readLine();
             String nextLine = bReader.readLine();
             int i = 0;
-            while(nextLine != null && i < 10000){
+            while(nextLine != null){
                 String[] items = nextLine.split(",");
                 String resortID = items[0];
                 String dayNum = items[1];
@@ -128,7 +134,7 @@ public class WriteTool {
                 
                 //System.out.println(queue.size());
                 nextLine = bReader.readLine();
-                i++;
+//                i++;
             }
             System.out.println("Number of rows " + dataList.size());
             bReader.close();

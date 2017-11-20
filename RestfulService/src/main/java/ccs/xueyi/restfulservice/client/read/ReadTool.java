@@ -66,7 +66,8 @@ public class ReadTool {
             
             ChartGenerator chartGenerator = new ChartGenerator();
             try {
-                chartGenerator.getChart(latencyArray, "Throughput - Read");
+                chartGenerator.getChart(latencyArray, "Throughput - Read", 
+                        "Ranking", "Latancy");
             } catch (IOException ex) {
                 Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
             }

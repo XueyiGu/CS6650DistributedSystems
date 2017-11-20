@@ -75,9 +75,6 @@ public class Subscriber{
     private static void retrievalMessage() {
         try {
             List<Message> receiveMsgs = sqs.receiveMessages();
-            System.out.println("****************Display messages****************");
-            sqs.displayMessage(receiveMsgs);
-            
             List<Message> deleteMsgs = new ArrayList<>();
             String messageId;
             if (receiveMsgs.isEmpty()) {

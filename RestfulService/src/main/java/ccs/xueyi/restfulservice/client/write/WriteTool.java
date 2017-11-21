@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  * @author ceres
  */
 public class WriteTool {
-    private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day999.csv";
+    private String FILE_NAME = "/Users/ceres/Downloads/BSDSAssignment2Day5.csv";
     
     private String url;
     private int threadNum = 10;
@@ -52,9 +52,10 @@ public class WriteTool {
 
         @Override
         public void run() {
+            finishTime = System.currentTimeMillis();
             try {
                 //wait from 1s 
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(WriteTool.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -72,7 +73,7 @@ public class WriteTool {
             System.out.println("The 95th perentile of latency is: " + percentile95th + "ms");
             System.out.println("The 99th perentile of latency is: " + percentile99th + "ms");
             
-            finishTime = System.currentTimeMillis();
+            
             System.out.println("All threads completed. Finish time: " + convertTime(finishTime));
             long wallTime = finishTime - startTime;
             System.out.println("Total wall time: " + wallTime + "ms");

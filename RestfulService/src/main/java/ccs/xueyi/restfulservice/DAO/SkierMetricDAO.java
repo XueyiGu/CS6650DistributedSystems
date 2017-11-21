@@ -63,6 +63,7 @@ public class SkierMetricDAO {
             }
             results.close();
             selectStmt.close();
+            connection.close();
         } catch (SQLException ex) {
             Logger.getLogger(SKIERMETRICDAO_NAME).log(Level.SEVERE, null, ex);
         } finally {

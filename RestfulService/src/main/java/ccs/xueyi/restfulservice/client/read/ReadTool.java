@@ -49,6 +49,15 @@ public class ReadTool {
         @Override
         public void run() {
             
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ReadTool.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //send the end signal
+            RestClient myClient = new RestClient(url);
+            myClient.getData("-1", "-1");
+            
             getCounts();
             System.out.println("Totoal number of request send: " + requestCount);
             System.out.println("Total number of successfull responses: " + successCount);
@@ -100,7 +109,7 @@ public class ReadTool {
     //load skier entry for get
     public void loadEntry(){
         for(int i = 1; i <= 4000; i++){
-            RFIDLiftData data = new RFIDLiftData("1", i + "");
+            RFIDLiftData data = new RFIDLiftData("5", i + "");
             dataList.add(data);
         }
     }

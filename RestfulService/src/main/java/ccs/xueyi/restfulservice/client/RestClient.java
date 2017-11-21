@@ -28,9 +28,9 @@ public class RestClient {
         this.url = url;
         client = ClientBuilder.newClient();
         webTarget = 
-//            client.target("http://34.214.49.130:8080/MavenServer/").path("webapi/myresource");
-//            client.target("http://" + url + "/RestfulService/").path("webapi/rest");
-        client.target("http://" + url + "/").path("webapi/rest");
+//          c  client.target("http://34.214.49.130:8080/MavenServer/").path("webapi/myresource");
+            client.target("http://" + url + "/RestfulService/").path("webapi/rest");
+//        client.target("http://" + url + "/").path("webapi/rest");
     }
   
     public int postData(RFIDLiftData form) throws ClientErrorException{

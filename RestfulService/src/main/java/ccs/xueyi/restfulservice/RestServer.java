@@ -48,7 +48,13 @@ public class RestServer {
                         @PathParam("skierID") String skierID,
                         @PathParam("dayNum") String dayNum) throws SQLException {
        // System.out.println("Did search for " + skierID + " and " + dayNum );
+       long startTime = System.currentTimeMillis();
+        //use int to indicate error or not
+        int error = 0;
         SkierMetric data = sMetricDAO.findSkiMetricByFilter(skierID, dayNum);
+        long queryTime = System.currentTimeMillis() - startTime;
+        String msg = dataToString(queryTime, error);
+        saveQueryData(msg, dayNum);
         return data;
     }
   
@@ -67,7 +73,7 @@ public class RestServer {
         }
         long responseTime = System.currentTimeMillis() - startTime;
         String msg = dataToString(responseTime, error);
-        saveMeasureData(msg, data);
+        saveRespnseData(msg, data);
         return Response.status(201).entity(data).build(); 
     } 
     
@@ -86,12 +92,23 @@ public class RestServer {
         RFIDLiftCache.getInstance().addToCache(data);
     }
     
+    private void saveQueryData(String msg, String dayNum){
+        if(Integer.parseInt(dayNum) == -1){
+            List<String> dataList = new ArrayList<>(MeasureCache.getInstance().getCache());
+            List<String> msgs = MeasureCache.getInstance().dataToMessage(dataList);
+            MeasureCacheExecutor executor = new MeasureCacheExecutor(msgs);
+            executor.start();
+            MeasureCache.getInstance().clearCache();
+            return;
+        }
+        MeasureCache.getInstance().addToCache(msg);
+    }
     /**
      * 
      * @param measure
      * @param data 
      */
-    private void saveMeasureData(String msg, RFIDLiftData data){
+    private void saveRespnseData(String msg, RFIDLiftData data){
         if(data.isLastone()){
             List<String> dataList = new ArrayList<>(MeasureCache.getInstance().getCache());
             List<String> msgs = MeasureCache.getInstance().dataToMessage(dataList);

@@ -6,7 +6,6 @@
 package ccs.xueyi.restfulservice;
 
 import ccs.xueyi.restfulservice.DAO.AwsDAO;
-import ccs.xueyi.restfulservice.model.MeasureData;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -132,6 +131,11 @@ public class SimpleQueueService {
 
     //for test
     public static void main(String[] args){
-        SimpleQueueService s = SimpleQueueService.getInstance();
+        try {
+            Map<String, String> map = AwsDAO.getInstance().getAwsToken();
+            System.out.println(map.get("access_key_id"));
+        } catch (SQLException ex) {
+            Logger.getLogger(SimpleQueueService.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

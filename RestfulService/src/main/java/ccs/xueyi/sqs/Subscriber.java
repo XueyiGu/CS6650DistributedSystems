@@ -25,8 +25,8 @@ import java.util.logging.Logger;
  * @author ceres
  */
 public class Subscriber{
-    private static final int SYNC_UP_SCHEDULE = 5 * 1000;
-    private static final int SYNC_UP_DB_SCHEDULE = 10 * 1000;
+    private static final int SYNC_UP_SCHEDULE = 5000;
+    private static final int SYNC_UP_DB_SCHEDULE = 10000;
     private static Map<String, Message> receivedMap;
     private static String queueUrl;
     private static long start = System.currentTimeMillis();

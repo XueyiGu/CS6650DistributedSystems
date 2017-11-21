@@ -11,7 +11,6 @@ import ccs.xueyi.restfulservice.model.RFIDLiftData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CyclicBarrier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,11 +58,10 @@ public class ReadDataThread extends Thread{
     }
     
     private void doGet(RestClient client, RFIDLiftData data){
-       //TO-DO
-       int status = client.getData(data.getSkierID(), data.getDayNum());
+        int status = client.getData(data.getSkierID(), data.getDayNum());
         requestCount++;
-        
-        if(status == 200){
+        //System.out.println("get status is " + status);
+        if(status == 200 || status == 204){
             successCount++;
         }
     }
